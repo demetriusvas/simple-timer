@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Progressivo</title>
+    <style>
+        /* Reset e Estilos Globais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Evita barras de rolagem */
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            font-family: 'Arial', sans-serif; /* Fonte simples e limpa */
+            color: #FF0000; /* Vermelho para os números */
+        }
+
+        /* Container do Timer */
+        .timer-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; /* Espaçamento entre o timer e os botões */
+        }
+
+        /* Estilo dos Controles (Botões) */
+        .controls {
+            display: flex;
+            gap: 20px; /* Espaçamento entre os botões */
+        }
+
+        .controls button {
+            background-color: #CC0000; /* Cor de fundo dos botões (vermelho escuro) */
+            color: #FFFFFF; /* Cor do texto dos botões (branco) */
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 0 15px #FF0000; /* Sombra neon para os botões (vermelho) */
+        }
+
+        .controls button:hover {
+            background-color: #FF0000; /* Um pouco mais claro no hover */
+            transform: translateY(-2px); /* Efeito de "levantar" no hover */
+            box-shadow: 0 0 25px #FF0000; /* Aumenta o brilho no hover */
+        }
+
+        .controls button:active {
+            transform: translateY(0); /* Retorna à posição original no clique */
+        }
+
+        /* Estilo do Timer */
+        #timer {
+            font-size: 18vw; /* Tamanho responsivo baseado na largura da tela */
+            font-weight: bold;
+            letter-spacing: 2px; /* Volta ao espaçamento padrão */
+            
+            /* Efeito de brilho (glow) */
+            /* Removido para um visual simples */
+            /* text-shadow: 
+                0 0 10px #FF0000,
+                0 0 20px #FF0000,
+                0 0 30px #FF0000,
+                0 0 40px #FF0000; */
+
+            /* Animação sutil */
+            animation: none; /* Remove a animação de pulsação */
+            transition: none; /* Remove a transição de cor/sombra */
+        }
+
+        /* Animação de pulsação */
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+            to {
+                transform: scale(1.03);
+                opacity: 1;
+            }
+        }
+
+        /* Media Query para telas menores (celulares) */
+        @media (max-width: 768px) {
+            #timer {
+                font-size: 15vw; /* Ajusta o tamanho da fonte para telas menores */
+                letter-spacing: 1px;
+            }
+
+            .controls button {
+                font-size: 1.2em;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="timer-container">
+        <div id="timer">00:00:00</div>
+        <div class="controls">
+            <button id="startButton">Iniciar</button>
+            <button id="stopButton">Parar</button>
+            <button id="resetButton">Zerar</button>
+        </div>
+    </div>
+
+    <script>
+        // Seleciona os elementos do DOM
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const resetButton = document.getElementById('resetButton');
+
+        // Variáveis para controlar o tempo e o estado do timer
+        let startTime = 0;
+        let elapsedTime = 0;
+        let intervalId;
+        let isRunning = false;
+
+        // Função para formatar um número com um zero à esquerda se for menor que 10
+        function formatTime(value) {
+            return String(value).padStart(2, '0');
+        }
+
+        // Função principal que atualiza o timer
+        function updateTimer() {
+            const now = Date.now();
+            elapsedTime = now - startTime;
+
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+
+            timerDisplay.textContent = 
+                `${formatTime(minutes)}:${formatTime(seconds)}:${formatTime(milliseconds)}`;
+        }
+
+        // Função para iniciar o timer
+        function startTimer() {
+            if (!isRunning) {
+                startTime = Date.now() - elapsedTime; // Ajusta startTime para continuar de onde parou
+                intervalId = setInterval(updateTimer, 10);
+                isRunning = true;
+            }
+        }
+
+        // Função para parar o timer
+        function stopTimer() {
+            clearInterval(intervalId);
+            isRunning = false;
+        }
+
+        // Função para zerar o timer
+        function resetTimer() {
+            clearInterval(intervalId);
+            isRunning = false;
+            elapsedTime = 0;
+            timerDisplay.textContent = '00:00:00';
+        }
+
+        // Adiciona os event listeners aos botões
+        startButton.addEventListener('click', startTimer);
+        stopButton.addEventListener('click', stopTimer);
+        resetButton.addEventListener('click', resetTimer);
+
+        // Inicializa o display do timer
+        timerDisplay.textContent = '00:00:00';
+    </script>
+
+</body>
+</html>
